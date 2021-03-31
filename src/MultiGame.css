@@ -1,0 +1,194 @@
+.bottomText {
+    position: absolute;
+    width: 400px;
+    left: 50%;
+    right: 50%;
+    bottom: 0%;
+    text-align: center;
+    transform: translate(-50%);
+  }
+  .topText {
+    position: absolute;
+    width: 400px;
+    left: 50%;
+    right: 50%;
+    top: 0%;
+    text-align: center;
+    transform: translate(-50%);
+  } 
+  .splitScreen {
+    width: 100%;
+    height: 50%;
+    position: absolute;
+  }
+  .CentreTitle {
+    position: absolute;
+    transform: translate(-50%);
+    width: 800px;
+    height: 100px;
+    bottom: 50%;
+    left: 50%;
+    right: 50%;
+    top: 50%;
+  }
+  .fadeIn {
+    animation: fadeIn 2s cubic-bezier(0.47, 0, 0.745, 0.715);
+  }
+  .animateRight {
+    animation: leftGrowRight 1s cubic-bezier(0.47, 0, 0.745, 0.715);
+  }
+  .animateLeft {
+    animation: rightGrowLeft 1s cubic-bezier(0.47, 0, 0.745, 0.715);
+  }
+  .MainTitle.shudder {
+    margin-left: 0%;
+    animation: shudderAnim 1s cubic-bezier(0.47, 0, 0.745, 0.715);
+  }
+
+  .topSplitScreen {
+    background-color: red;
+    position: absolute;
+    width: 100%;
+    height: 50vh;
+    top: 0%;
+
+  }
+  .bottomSplitScreen {
+    background-color: blue;
+    position: absolute;
+    width: 100%;
+    height: 50vh;
+    bottom: 0%;
+  }
+
+  .countDown {
+    
+    width: 300px;
+    height: 300px;
+    position: fixed;
+    bottom: 50%;
+    right: 50%;
+    transform: translate(50%, 50%);
+    font-size: 500px;
+    text-align: center;
+    animation: shrinkAndFade 1s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    
+  }
+  .gameOver {
+    width: 100%;
+    height: 100%;
+    background-color: rgb(31, 31, 31);
+  }
+  .crtStatic {
+    width: 100%;
+    height: 100%;
+    background-image: url("Static.gif");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    position: fixed;
+  }
+  .LargeArticle {
+    background-color: rgba(0,0,0,0.4);
+    position: fixed;
+    bottom: 50%;
+    right: 50%;
+    transform: translate(50%, 50%);
+    width: 70vw;
+    height: 40vh;
+    padding: 10px;
+    text-align: center;
+    color: white;
+  }
+  .LargeArticle p {
+    font-size: 20px;
+  }
+  .continueButton {
+    position: fixed;
+    bottom: 20vh;
+    right: 50%;
+    transform: translate(50%);
+
+    background-color: greenyellow;
+    color: green;
+    text-align: center;
+    font-weight: bold;
+    font-size: 35px;
+    width: 120px;
+    height: 50px;
+  }
+  .continueButton:hover {
+    background-color: green;
+    cursor: pointer;
+  }
+  @keyframes shrinkAndFade {
+    0% {
+      opacity: 100%;
+      font-size: 200px;
+    }
+    100% {
+      opacity: 0%;
+      font-size: 170px;
+    }
+  }
+  @keyframes shudderAnim {
+    0% {
+      margin-left: 0%;
+    }
+    20% {
+      margin-left: 2%;
+    }
+    40% {
+      margin-left: 0%;
+    }
+    60% {
+      margin-left: 2%;
+    }
+    80% {
+      margin-left: 0%;
+    }
+    100% {
+      margin-left: 2%;
+    }
+  
+  }
+  @keyframes fadeIn {
+    0% {
+      opacity: 0%;
+    }
+    50% {
+      opacity: 0%;
+    }
+    100% {
+      opacity: 100%;
+    }
+  }
+  @keyframes leftGrowRight {
+    0% {
+      left: 0%;
+      width: 0;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+  @keyframes rightGrowLeft {
+    0% {
+      right: 0%;
+      width: 0;
+    }
+    100% {
+      right: 0%;
+      width: 100%;
+    }
+  }
+  @keyframes loadingTransition {
+    0% {
+      background: rgba(0, 124, 0, 1);
+      /*background: linear-gradient(90deg, rgba(215,12,43,1) 0%,  0%);*/
+    }
+    100% {
+      background: rgb(215, 12, 43);
+  
+      /*background: linear-gradient(90deg, rgba(215,12,43,1) 100%, rgba(0,124,0,1) 100%);*/
+    }
+  }

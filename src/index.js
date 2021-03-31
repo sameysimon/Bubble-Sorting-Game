@@ -6,7 +6,11 @@ import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <div>
+    <div id="curve-screen" />
+      <div id="crt"/>
+      <App />
+    </div>
   </React.StrictMode>,
   document.getElementById('root')
 );
