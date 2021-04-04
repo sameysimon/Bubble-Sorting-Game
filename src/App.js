@@ -1,11 +1,12 @@
 import './App.css';
 import Game from './Game.js';
+import InputComponent from './InputComponent.js';
 import MultiGameManager from './MultiGame';
 import React, { useEffect, useState } from 'react';
 import './Game.css';
 var bubbleSortCode = `private void bubbleSort(int[] theArray) {
   int temp;//We need this integer to facilitate swap operations.
-  for (int i = 0; i < theArray.length - 1; i++) {
+  for (int i = 0; i < theArray.length() - 1; i++) {
     for (int j = 0; j < i; j++) {
       if (theArray[j] < theArray[j+1]) {
         //These are out of order! Perform the swap!
@@ -16,27 +17,17 @@ var bubbleSortCode = `private void bubbleSort(int[] theArray) {
     }
   }`;
 
-class App extends React.Component {
+class App extends InputComponent {
   constructor(props) {
     super(props);
     this.state = {gameState: "MainMenu", escaping: "", time: 0};
-    
+    this.goToMainMenu = this.goToMainMenu.bind(this);
+    this.enableKeyboardInput();
   }
-
-  handleEscapePush(e) {
-    console.log("App key push.");
-    if (e.key == "Escape") {
-      this.setState({gameState: "MainMenu"});
-    }
+  goToMainMenu() {
+    this.enableKeyboardInput();
+    this.setState({gameState: "MainMenu"});
   }
-  componentWillMount() {
-    document.addEventListener("keydown", (e) => this.handleEscapePush(e));
-    
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener("keydown", (e) => this.handleEscapePush(e));
-  } 
 
   startGame() {
     this.setState({gameState: "Game"});
@@ -44,15 +35,15 @@ class App extends React.Component {
   render() {
     var timePoints =this.state.time;
     if (this.state.gameState == "Game") {
+      this.disableKeyboardInput();//Disable main menu input.
       return(
         <div className="Screen">
-          <Game ownTimer={true} enabled={true} gameEnabled={true} aiControl={false}/>
+          <Game quit={this.goToMainMenu} ownTimer={true} enabled={true} gameEnabled={true} aiControl={false}/>
           <div onClick={() => {this.setState({gameState: "MainMenu"})}} className={"EscapeButton"}><p>Escape</p></div>
         </div>
       );
     } else if (this.state.gameState == "MainMenu") {
       return(
-        
         <div className="Screen">
           <div className="backgroundCode"><WriteText speed={100} text={bubbleSortCode} /></div>
           <h1 className="MainTitle">Bubble Sort<br/>The Video Game</h1>
@@ -63,12 +54,12 @@ class App extends React.Component {
             <div className="Option">Quit</div>
           </div>
         </div>
-
       );
     } else if (this.state.gameState == "Verses") {
+      this.disableKeyboardInput();
       return (
         <div className="Screen">
-          <MultiGameManager />
+          <MultiGameManager quit={this.goToMainMenu} />
       
         </div>
       );
@@ -124,7 +115,6 @@ class WriteText extends React.Component {
         }
       } 
     }
-
     this.setState({currText: currText});
   }
 

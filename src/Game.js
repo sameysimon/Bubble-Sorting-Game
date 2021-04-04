@@ -1,37 +1,35 @@
 import React, { useEffect, useState } from 'react';
+import InputComponent from './InputComponent.js';
 import './Game.css';
-class Game extends React.Component {
+class Game extends InputComponent {
   
   
     constructor(props) {
       super(props);
-      console.log("constructor.");
       var randomArray = []
-      //It's making new arrays when it shouldn't?
+      //Generate 10 random integers and store in array. 
       for (let index = 0; index < 10; index++) {
         randomArray[index] = Math.floor(Math.random() * 100)
       }
-  
-      var sorted = [...randomArray];
-      for (let index = 0; index < 10; index++) {
-        console.log(index + " index " + sorted[index] + "is sorted.  rand is " + randomArray[index]); 
-      }
-      
-      sorted.sort(function(a,b){return a-b});
+      var sorted = [...randomArray];//Copy contetns of randomly generated array to new 'sorted' array.
+      sorted.sort(function(a,b){return a-b});'Sort that array.'
 
-      this.state = {itemOne: 0, itemTwo: 1, itemsArray: randomArray, arrayLength: 10, selectedIndex: 0, sortedArray: sorted, won: "false", time: 0, gamePadIndex: -1, aiInterval: false};
-      this.handleKeyPush = this.handleKeyPush.bind(this);
+      //Initialise State:
+      this.state = {itemOne: 0, itemTwo: 1,
+        itemsArray: randomArray, arrayLength: 10,
+        selectedIndex: 0, sortedArray: sorted,
+        won: "false", time: 0,
+        gamePadIndex: -1, aiInterval: false};
       
+      //Binded Functions:
       this.checkForWin = this.checkForWin.bind(this);
       this.connectController = this.connectController.bind(this);
-    
       this.gamePadPoll = this.gamePadPoll.bind(this);
       this.tick = this.tick.bind(this);
       this.aiTurn = this.aiTurn.bind(this);
     }
 
     tick() {
-        console.log("Time: " + this.state.time);
         this.setState({time: this.state.time + 1});
     }
     
@@ -130,7 +128,8 @@ class Game extends React.Component {
       
     }
   
-    handleKeyPush(e) {
+    keyboardInput(e) {
+      if (e.key === "Escape") { this.props.quit(); }
       if (this.props.gameEnabled == false) {return}
       //Check inputs:
       if (e.key === "d" || e.key === "ArrowRight") {
@@ -166,20 +165,26 @@ class Game extends React.Component {
 
     componentWillMount() {
       if (this.props.aiControl == false) {
-        document.addEventListener("keydown", this.handleKeyPush, true);
-        window.addEventListener("gamepadconnected", (e) => this.connectController(e), true); 
+        //This will be human controlled.
+        //Enable Key listener to call input functons:
+        this.enableKeyboardInput();
+//        window.addEventListener("gamepadconnected", (e) => this.connectController(e), true); 
       } else {
+        //Create interval to call AI function to call input functions..
         this.setState({aiInterval: setInterval(this.aiTurn, 50)});
       }
       if (this.props.ownTimer == true) {
+        //This Game Component will use its own timer interval. So set it up.
         console.log("Own Timer is true.");
         this.setState({interval: setInterval(this.tick, 1000)});
       }
     }
     componentWillUnmount() {
       console.log("Unmount Game!");
-      document.removeEventListener("keydown", this.handleKeyPush, true);
-      window.removeEventListener("gamepadconnected", (e) => this.connectController(e));
+      //Disable Key listener to call input functions.
+      this.disableKeyboardInput();
+      //window.removeEventListener("gamepadconnected", (e) => this.connectController(e));
+      //Clear timer interval.
       clearInterval(this.state.interval);
     } 
     aiTurn() {
@@ -199,8 +204,9 @@ class Game extends React.Component {
     componentDidUpdate(prevProps) {
       if (this.props.gameEnabled == true) {
         if (this.props.aiControl == true) {
-          
+          //Ai Control and enabled.
         } else if (this.state.aiInterval != null) {
+          //AI Control switched off but  Interval is running for it. Therefor clear it.
           clearInterval(this.state.aiInterval);
         }
       }

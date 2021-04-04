@@ -63,9 +63,10 @@ class MultiGameManager extends React.Component {
       this.setState({PlayerTwoName: name, playerTwoStartedEditing: editing, playerTwoReady: ready});
     }
     typing(e) {
-      if (this.state.interval == null) {
-        this.setState({interval: setInterval(this.computerTyping, 50)});
-      }
+
+      if (e.key==="Escape") { this.props.quit(); }
+      if (this.state.interval == null) {this.setState({interval: setInterval(this.computerTyping, 50)}); }
+      
       var name = this.state.PlayerOneName;
       var editing = this.state.playerOneStartedEditing;
       var ready = this.state.playerOneReady;
@@ -129,7 +130,7 @@ class MultiGameManager extends React.Component {
       }
       switch (gameStage) {
         case 0:
-          return <ResultsScreen />//this.selectNames();
+          return this.selectNames();
           break;
         case 1:
           return <MultiplayerGame onFinish={this.onBothGamesFinished} playerOneName={this.state.PlayerOneName}  playerTwoName={this.state.PlayerTwoName}/>;
