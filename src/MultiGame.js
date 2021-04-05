@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './MultiGame.css';
 import Game from './Game.js';
 import InputComponent from './InputComponent.js';
+import TextWriter from './TextWriter.js';
 const computerName = "Robo-Cop";
 
 
@@ -249,7 +250,7 @@ class ResultsScreen extends InputComponent {
       case 0:
         return(
           <>
-            <h1>Game Over</h1>
+            <h1><TextWriter speed={100} text={"Game Over"} /></h1>
             <p>Simon sorted their array in 10 seconds.</p>
             <p>Robo-Cop sorted their array in 57 seconds.</p>
           </>
