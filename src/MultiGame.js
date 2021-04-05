@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './MultiGame.css';
 import Game from './Game.js';
+import InputComponent from './InputComponent.js';
 const computerName = "Robo-Cop";
 
 
-class MultiGameManager extends React.Component {
+class MultiGameManager extends InputComponent {
     constructor(props) {
       super(props);
       //Game Stage Guide. 0=Picking Names, 1=count down, 2=Game in progress, 3=Game ended.
@@ -12,18 +13,18 @@ class MultiGameManager extends React.Component {
         gameStage: 0, PlayerOneName: "Insert Name", PlayerTwoName: "Insert Name",
         playerOneStartedEditing: false, playerOneReady: false,
         playerTwoStartedEditing: false, playerTwoReady: false,
-        time: -1
+        time: -1, interval: null
       };
-      this.typing = this.typing.bind(this);
       this.computerTyping = this.computerTyping.bind(this);
-      this.tickMethod = this.tickMethod.bind(this);
+      this.tick = this.tick.bind(this);
       this.onBothGamesFinished = this.onBothGamesFinished.bind(this);
+      this.checkForFinish = this.checkForFinish.bind(this);
     }
     componentWillMount() {
-      document.addEventListener("keydown", this.typing);
+      this.enableKeyboardInput();
     }
     componentWillUnmount() {
-      document.removeEventListener("keydown", this.typing);
+      this.disableKeyboardInput();
       clearInterval(this.state.interval);
     }
     getRandomInt(max) {
@@ -59,12 +60,14 @@ class MultiGameManager extends React.Component {
         }
         
       }
-
       this.setState({PlayerTwoName: name, playerTwoStartedEditing: editing, playerTwoReady: ready});
+      this.checkForFinish();
     }
-    typing(e) {
 
+    keyboardInput(e) {
+      //If Hits Escape, call function to return to main meny.
       if (e.key==="Escape") { this.props.quit(); }
+      //If No AI interval has started, enable it.
       if (this.state.interval == null) {this.setState({interval: setInterval(this.computerTyping, 50)}); }
       
       var name = this.state.PlayerOneName;
@@ -91,7 +94,20 @@ class MultiGameManager extends React.Component {
         } 
       }
       this.setState({PlayerOneName: name, playerOneStartedEditing: editing, playerOneReady: ready});
+      this.checkForFinish();
     }
+
+    //Checks if both players are ready.
+    checkForFinish() {
+      if (this.state.playerOneReady & this.state.playerTwoReady) {
+        console.log("Finished Names");
+        clearInterval(this.state.interval);
+        this.disableKeyboardInput();
+        this.setState({gameStage: 1});
+      }
+    }
+
+    //Function with markup to display Name Entering Screen
     selectNames() {
       var errorClass = "";
       var notifClass = "topText";
@@ -113,9 +129,8 @@ class MultiGameManager extends React.Component {
         </div>   
       );
     }
-    tickMethod() {
-      console.log("Time Stamp: " + this.state.timeStamp);
-      
+
+    tick() {
       this.setState({time: this.state.time + 1});
     }
     onBothGamesFinished(playerOneTime, playerTwoTime) {
@@ -124,19 +139,15 @@ class MultiGameManager extends React.Component {
     }
     render() {
       var gameStage = this.state.gameStage;
-      if (this.state.gameStage == 0 & this.state.playerOneReady & this.state.playerTwoReady) {
-        document.removeEventListener("keydown", this.typing);
-        gameStage = 1;
-      }
       switch (gameStage) {
         case 0:
           return this.selectNames();
           break;
         case 1:
-          return <MultiplayerGame onFinish={this.onBothGamesFinished} playerOneName={this.state.PlayerOneName}  playerTwoName={this.state.PlayerTwoName}/>;
+          return <MultiplayerGame quit={this.props.quit} onFinish={this.onBothGamesFinished} playerOneName={this.state.PlayerOneName}  playerTwoName={this.state.PlayerTwoName}/>;
           break;
         case 2:
-          return <ResultsScreen playerOneName={this.state.PlayerOneName} playerTwoName={this.state.PlayerTwoName} playerOneTime={this.state.playerOneTime} playerTwoTime={this.state.playerTwoTime}/>
+          return <ResultsScreen quit={this.props.quit} playerOneName={this.state.PlayerOneName} playerTwoName={this.state.PlayerTwoName} playerOneTime={this.state.playerOneTime} playerTwoTime={this.state.playerTwoTime}/>
       }
     }
   }
@@ -200,7 +211,7 @@ class MultiplayerGame extends React.Component {
     return(
       <div>
         <div className="topSplitScreen">
-          <Game onFinish= {this.onPlayerOneFinished} finishMsg={"FINISHED!"} gameEnabled={gameStarted} ownTimer={false} aiControl={false}/>
+          <Game quit={this.props.quit} onFinish={this.onPlayerOneFinished} finishMsg={"FINISHED!"} gameEnabled={gameStarted} ownTimer={false} aiControl={false}/>
           <h2 className="bottomText">{this.props.playerOneName}</h2>
         </div>
         <div className="bottomSplitScreen">
@@ -212,20 +223,26 @@ class MultiplayerGame extends React.Component {
     );
   }
 }
-class ResultsScreen extends React.Component {
+class ResultsScreen extends InputComponent {
   constructor(props) {
     super(props);
     this.state = ({slide: 0});
     this.nextSlide = this.nextSlide.bind(this);
+    this.enableKeyboardInput();
   }
-  componentDidMount() {
-
+  componentWillUnmount() {
+    this.disableKeyboardInput();
   }
-
-
   nextSlide() {
     const currSlide = this.state.slide + 1;
     this.setState({slide: currSlide});
+  }
+  keyboardInput(e) {
+    if (e.key === " " || e.key === "Enter") {
+      this.nextSlide();
+    } else if (e.key === "Escape") {
+      this.props.quit();
+    }
   }
   grabSlide() {
     switch (this.state.slide) {

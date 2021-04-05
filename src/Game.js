@@ -12,7 +12,7 @@ class Game extends InputComponent {
         randomArray[index] = Math.floor(Math.random() * 100)
       }
       var sorted = [...randomArray];//Copy contetns of randomly generated array to new 'sorted' array.
-      sorted.sort(function(a,b){return a-b});'Sort that array.'
+      sorted.sort(function(a,b){return a-b});//Sort that array.
 
       //Initialise State:
       this.state = {itemOne: 0, itemTwo: 1,
