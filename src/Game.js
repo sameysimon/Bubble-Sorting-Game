@@ -19,12 +19,12 @@ class Game extends InputComponent {
         itemsArray: randomArray, arrayLength: 10,
         selectedIndex: 0, sortedArray: sorted,
         won: "false", time: 0,
-        gamePadIndex: -1, aiInterval: false};
+        aiInterval: false};
       
       //Binded Functions:
       this.checkForWin = this.checkForWin.bind(this);
-      this.connectController = this.connectController.bind(this);
-      this.gamePadPoll = this.gamePadPoll.bind(this);
+      this.onGamepadConnected = this.onGamepadConnected.bind(this);
+      this.gamepadInput = this.gamepadInput.bind(this);
       this.tick = this.tick.bind(this);
       this.aiTurn = this.aiTurn.bind(this);
     }
@@ -142,18 +142,12 @@ class Game extends InputComponent {
         this.swapItems();
       }
     };
-    connectController(e) {
-      var index = e.gamepad.index;
-      console.log("Connecting Controller " + e.gamepad.index);
-      
-      this.setState({gamePadIndex: index});
-      console.log(e);
-      this.setState({gamePadPoll: setInterval(this.gamePadPoll, 100)});
-    }
-    gamePadPoll() {
+
+    gamepadInput() {
+      console.log("Index " + this.state.gamepadIndex);
       if (this.props.gameEnabled == true) {return}
-      if (this.state.gamePadIndex == -1) {return}
-      var gamepad = navigator.getGamepads()[this.state.gamePadIndex];
+      var gamepad = navigator.getGamepads()[this.state.gamepadIndex];
+      console.log(gamepad);
       var moveAxisX = gamepad.axes[0];
       if (moveAxisX > 0.7) {
         this.moveRight();
@@ -167,8 +161,8 @@ class Game extends InputComponent {
       if (this.props.aiControl == false) {
         //This will be human controlled.
         //Enable Key listener to call input functons:
-        this.enableKeyboardInput();
-//        window.addEventListener("gamepadconnected", (e) => this.connectController(e), true); 
+        this.enableInput();
+
       } else {
         //Create interval to call AI function to call input functions..
         this.setState({aiInterval: setInterval(this.aiTurn, 50)});
@@ -182,7 +176,7 @@ class Game extends InputComponent {
     componentWillUnmount() {
       console.log("Unmount Game!");
       //Disable Key listener to call input functions.
-      this.disableKeyboardInput();
+      this.disableInput();
       //window.removeEventListener("gamepadconnected", (e) => this.connectController(e));
       //Clear timer interval.
       clearInterval(this.state.interval);
