@@ -23,10 +23,10 @@ class App extends InputComponent {
     super(props);
     this.state = {gameState: "MainMenu", escaping: "", time: 0};
     this.goToMainMenu = this.goToMainMenu.bind(this);
-    this.enableInput();
+    this.enableKeyboardInput();
   }
   goToMainMenu() {
-    this.enableInput();
+    this.enableKeyboardInput();
     this.setState({gameState: "MainMenu"});
   }
 
@@ -36,7 +36,7 @@ class App extends InputComponent {
   render() {
     var timePoints =this.state.time;
     if (this.state.gameState == "Game") {
-      this.disableInput();//Disable main menu input.
+      this.disableKeyboardInput();//Disable main menu input.
       return(
         <div className="Screen">
           <Game quit={this.goToMainMenu} ownTimer={true} enabled={true} gameEnabled={true} aiControl={false}/>

@@ -22,10 +22,10 @@ class MultiGameManager extends InputComponent {
       this.checkForFinish = this.checkForFinish.bind(this);
     }
     componentWillMount() {
-      this.enableInput();
+      this.enableKeyboardInput();
     }
     componentWillUnmount() {
-      this.disableInput();
+      this.disableKeyboardInput();
       clearInterval(this.state.interval);
     }
     getRandomInt(max) {
@@ -103,7 +103,7 @@ class MultiGameManager extends InputComponent {
       if (this.state.playerOneReady & this.state.playerTwoReady) {
         console.log("Finished Names");
         clearInterval(this.state.interval);
-        this.disableInput();
+        this.disableKeyboardInput();
         this.setState({gameStage: 1});
       }
     }
@@ -229,10 +229,10 @@ class ResultsScreen extends InputComponent {
     super(props);
     this.state = ({slide: 0});
     this.nextSlide = this.nextSlide.bind(this);
-    this.enableInput();
+    this.enableKeyboardInput();
   }
   componentWillUnmount() {
-    this.disableInput();
+    this.disableKeyboardInput();
   }
   nextSlide() {
     const currSlide = this.state.slide + 1;
