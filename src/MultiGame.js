@@ -245,6 +245,17 @@ class ResultsScreen extends InputComponent {
       this.props.quit();
     }
   }
+  gamepadInput() {
+    const gamepad = navigator.getGamepads()[0];
+    if (gamepad.buttons[6].touched && gamepad.buttons[7].touched) { this.props.quit(); }
+    if (currentTimeStamp - this.gamepadTimestamp < 200) {
+      console.log("Too soon.");
+      return;
+    }
+    if (gamepad.buttons[0].pressed) {
+      this.nextSlide();
+    }
+  }
   grabSlide() {
     switch (this.state.slide) {
       case 0:

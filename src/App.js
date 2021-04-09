@@ -57,7 +57,7 @@ class App extends InputComponent {
         </div>
       );
     } else if (this.state.gameState == "Verses") {
-      this.disableKeyboardInput();
+      this.disableInput();
       return (
         <div className="Screen">
           <MultiGameManager quit={this.goToMainMenu} />

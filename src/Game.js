@@ -19,11 +19,11 @@ class Game extends InputComponent {
         itemsArray: randomArray, arrayLength: 10,
         selectedIndex: 0, sortedArray: sorted,
         won: "false", time: 0,
-        aiInterval: false};
+        aiInterval: false, smallInterval: 0};
       
       //Binded Functions:
       this.checkForWin = this.checkForWin.bind(this);
-      this.onGamepadConnected = this.onGamepadConnected.bind(this);
+      this.connectGamepad = this.connectGamepad.bind(this);
       this.gamepadInput = this.gamepadInput.bind(this);
       this.tick = this.tick.bind(this);
       this.aiTurn = this.aiTurn.bind(this);
@@ -34,19 +34,11 @@ class Game extends InputComponent {
     }
     
     checkForWin() {
-      console.log("CHECK FOR WIN:");
-      var sorted = this.state.sortedArray;
-      var randomArray = this.state.itemsArray;
-      for (let index = 0; index < 10; index++) {
-        console.log("   " + index + " index " + sorted[index] + "is sorted.  rand is " + randomArray[index]); 
-      }
-  
       const array = this.state.itemsArray;
       const sortedArray = this.state.sortedArray;
       
       for (let index = 0; index < this.state.arrayLength; index++) {
         if (this.state.itemsArray[index] !== this.state.sortedArray[index]) {
-          console.log("   NOT MATCH: " + index + " user's " + (this.state.itemsArray[index] + " and sorted's " + this.state.sortedArray[index]));
           return;
         }
       }
@@ -144,16 +136,31 @@ class Game extends InputComponent {
     };
 
     gamepadInput() {
-      console.log("Index " + this.state.gamepadIndex);
-      if (this.props.gameEnabled == true) {return}
-      var gamepad = navigator.getGamepads()[this.state.gamepadIndex];
-      console.log(gamepad);
-      var moveAxisX = gamepad.axes[0];
-      if (moveAxisX > 0.7) {
-        this.moveRight();
+      if (this.props.gameEnabled == false) {return}
+      var currentTimeStamp = Date.now();
+      if (currentTimeStamp - this.gamepadTimestamp < 200) {
+        console.log("Too soon.");
+        return;
       }
-      if (moveAxisX < -0.7) {
+      var gamepad = navigator.getGamepads()[0];
+      if (gamepad.buttons[6].touched && gamepad.buttons[7].touched) { this.props.quit(); }
+      if (gamepad.axes[0] > 0.7 || gamepad.buttons[15].touched) {
+        this.gamepadTimestamp = currentTimeStamp;
+        this.moveRight();
+        return;
+      }
+      if (gamepad.axes[0] < -0.7 || gamepad.buttons[14].touched) {
+        this.gamepadTimestamp = currentTimeStamp;
         this.moveLeft();
+        return;
+      }
+      if (gamepad.buttons[0].touched) {
+        this.gamepadTimestamp = currentTimeStamp;
+        this.selectItem();
+      }
+      if (gamepad.buttons[2].touched) {
+        this.gamepadTimestamp = currentTimeStamp;
+        this.swapItems();
       }
     }
 
@@ -161,8 +168,8 @@ class Game extends InputComponent {
       if (this.props.aiControl == false) {
         //This will be human controlled.
         //Enable Key listener to call input functons:
+        console.log("Enabled input.");
         this.enableInput();
-
       } else {
         //Create interval to call AI function to call input functions..
         this.setState({aiInterval: setInterval(this.aiTurn, 50)});
@@ -177,7 +184,7 @@ class Game extends InputComponent {
       console.log("Unmount Game!");
       //Disable Key listener to call input functions.
       this.disableInput();
-      //window.removeEventListener("gamepadconnected", (e) => this.connectController(e));
+      
       //Clear timer interval.
       clearInterval(this.state.interval);
     } 
@@ -200,7 +207,7 @@ class Game extends InputComponent {
         if (this.props.aiControl == true) {
           //Ai Control and enabled.
         } else if (this.state.aiInterval != null) {
-          //AI Control switched off but  Interval is running for it. Therefor clear it.
+          //AI Control switched off but Interval is running for it. Therefor clear it.
           clearInterval(this.state.aiInterval);
         }
       }
