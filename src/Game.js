@@ -137,6 +137,7 @@ class Game extends InputComponent {
 
     gamepadInput() {
       if (this.props.gameEnabled == false) {return}
+      if (this.props.aiControl == true) {this.disableInput();}
       var currentTimeStamp = Date.now();
       if (currentTimeStamp - this.gamepadTimestamp < 200) {
         console.log("Too soon.");

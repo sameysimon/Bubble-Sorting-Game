@@ -5,6 +5,7 @@ import MultiGameManager from './MultiGame';
 import React, { useEffect, useState } from 'react';
 import TextWriter from './TextWriter.js'
 import './Game.css';
+
 var bubbleSortCode = `private void bubbleSort(int[] theArray) {
   int temp;//We need this integer to facilitate swap operations.
   for (int i = 0; i < theArray.length() - 1; i++) {
@@ -17,7 +18,9 @@ var bubbleSortCode = `private void bubbleSort(int[] theArray) {
       }
     }
   }`;
-
+/**
+ * Primary Master Component that houses the rest of the game.
+ */
 class App extends InputComponent {
   constructor(props) {
     super(props);

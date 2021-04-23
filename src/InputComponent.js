@@ -1,6 +1,5 @@
 import React from 'react';
 class InputComponent extends React.Component {
-  
     constructor(props) {
       super(props);
       //Keyboard events:
@@ -11,9 +10,12 @@ class InputComponent extends React.Component {
       this.gamepadInput = this.gamepadInput.bind(this);
 
       this.gamepadTimestamp = 0;
-      window.addEventListener("gamepadconnected", this.connectGamepad, true);
+      if (this.props.aiControl === false) {
+        window.addEventListener("gamepadconnected", this.connectGamepad, true);
+      }
+      
     }
-
+    
     keyboardInput(e) {
       console.log("Key entered: " + e.key); 
     }
