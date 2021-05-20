@@ -27,6 +27,7 @@ class Game extends InputComponent {
       this.gamepadInput = this.gamepadInput.bind(this);
       this.tick = this.tick.bind(this);
       this.aiTurn = this.aiTurn.bind(this);
+      this.changeSelectedIndex = this.changeSelectedIndex.bind(this);
     }
 
     tick() {
@@ -60,7 +61,7 @@ class Game extends InputComponent {
       if (currentIndex === 4) {
         currentIndex = 0;
       }
-      this.setState({selectedIndex : currentIndex})
+      this.changeSelectedIndex(currentIndex);
     }
   
     moveLeft() {
@@ -69,10 +70,11 @@ class Game extends InputComponent {
       if (currentIndex === -1) {
         currentIndex = 3;
       }
-      this.setState({selectedIndex : currentIndex})
+      this.changeSelectedIndex(currentIndex);
     }
   
     shiftRight() {
+      if (this.props.gameEnabled == false) { return }
       var one = this.state.itemOne;
       var two = this.state.itemTwo;
       one++;
@@ -86,6 +88,7 @@ class Game extends InputComponent {
     }
   
     shiftLeft() {
+      if (this.props.gameEnabled == false) { return }
       var one = this.state.itemOne;
       var two = this.state.itemTwo;
       one--;
@@ -110,6 +113,7 @@ class Game extends InputComponent {
     }
   
     swapItems() {
+      if (this.props.gameEnabled == false) { return }
       var acc;
       var array = this.state.itemsArray;
       acc = array[this.state.itemOne];
@@ -143,7 +147,7 @@ class Game extends InputComponent {
         console.log("Too soon.");
         return;
       }
-      var gamepad = navigator.getGamepads()[0];
+      const gamepad = navigator.getGamepads()[0];
       if (gamepad.buttons[6].touched && gamepad.buttons[7].touched) { this.props.quit(); }
       if (gamepad.axes[0] > 0.7 || gamepad.buttons[15].touched) {
         this.gamepadTimestamp = currentTimeStamp;
@@ -213,6 +217,12 @@ class Game extends InputComponent {
         }
       }
     }
+    changeSelectedIndex(newIndex) {
+      console.log("hey");
+      if (this.state.selectedIndex !== newIndex) {
+        this.setState({selectedIndex: newIndex});
+      }
+    }
     render() {
       var valOne = this.state.itemsArray;
       var timerClass = "timer";
@@ -226,19 +236,41 @@ class Game extends InputComponent {
         )
       }
       if (this.props.ownTimer == false) { timerClass = "noDisplay"; }
-      return (
-        <div className="App">
-          <div className="elementBox">
-            {winBox}
-            <NavButton actionFunc={() => this.shiftLeft()} selected={this.state.selectedIndex == 0 && "true"} arrow="<" />
-            <Item actionFunc={() => this.swapItems()} selected={this.state.selectedIndex == 1 && "true"} value={valOne[this.state.itemOne]} index={this.state.itemOne}/>
-            <Item actionFunc={() => this.swapItems()} selected={this.state.selectedIndex == 2 && "true"} value={valOne[this.state.itemTwo]} index={this.state.itemTwo}/>
-            <NavButton actionFunc={() => this.shiftRight()} selected={this.state.selectedIndex == 3 && "true"} arrow=">" />
-            
+      
+      if (this.props.aiControl == true) {
+        return (
+          <div className="App">
+            <div className="elementBox">
+              {winBox}
+              <NavButton selected={this.state.selectedIndex == 0 && "true"} arrow="<" />
+              <Item selected={this.state.selectedIndex == 1 && "true"} value={valOne[this.state.itemOne]} index={this.state.itemOne}/>
+              <Item selected={this.state.selectedIndex == 2 && "true"} value={valOne[this.state.itemTwo]} index={this.state.itemTwo}/>
+              <NavButton selected={this.state.selectedIndex == 3 && "true"} arrow=">" />
+              
+            </div>
+            <h2 className={timerClass} >{Math.floor(this.state.time/60)}:{this.state.time % 60}</h2>
           </div>
-          <h2 className={timerClass} >{Math.floor(this.state.time/60)}:{this.state.time % 60}</h2>
-        </div>
-      );
+        );
+      } else {
+        return (
+          <div className="App">
+            <div className="elementBox">
+              {winBox}
+              <NavButton mouseOver={() => this.changeSelectedIndex(0)} actionFunc={() => this.shiftLeft()} selected={this.state.selectedIndex == 0 && "true"} arrow="<" />
+              <Item mouseOver={() => this.changeSelectedIndex(1)} actionFunc={() => this.swapItems()} selected={this.state.selectedIndex == 1 && "true"} value={valOne[this.state.itemOne]} index={this.state.itemOne}/>
+              <Item mouseOver={() => this.changeSelectedIndex(2)} actionFunc={() => this.swapItems()} selected={this.state.selectedIndex == 2 && "true"} value={valOne[this.state.itemTwo]} index={this.state.itemTwo}/>
+              <NavButton mouseOver={() => this.changeSelectedIndex(3)} actionFunc={() => this.shiftRight()} selected={this.state.selectedIndex == 3 && "true"} arrow=">" />
+              
+            </div>
+            <h2 className={timerClass} >{Math.floor(this.state.time/60)}:{this.state.time % 60}</h2>
+          </div>
+        );
+      }
+
+
+
+
+      
     }
   }
   
@@ -251,13 +283,24 @@ class Game extends InputComponent {
       if (this.props.selected === "true") {
         selectedState = " selected";
       }
+      //Input functions passed:
+      if (this.props.mouseOver == null) {
+        return (
+          <div className={"itemCard" + selectedState} >
+            <h1>{this.props.value}</h1>
+            {this.props.index}
+          </div>
+        );
+      } else {
+        return (
+          <div onMouseOver={this.props.mouseOver} onClick={this.props.actionFunc} className={"itemCard" + selectedState} >
+            <h1>{this.props.value}</h1>
+            {this.props.index}
+          </div>
+        );
+      }
       
-      return (
-        <div onClick={() => this.props.actionFunc()} className={"itemCard" + selectedState} >
-          <h1>{this.props.value}</h1>
-          {this.props.index}
-        </div>
-      );
+      
   }
   
   }
@@ -270,11 +313,22 @@ class Game extends InputComponent {
       if (this.props.selected === "true") {
         selectedState = " selected";
       }
-      return(
-        <div onClick={() => this.props.actionFunc()} className={"navButton" + selectedState}>
-          <h1>{this.props.arrow}</h1>
-        </div>
-      );
+      if (this.props.mouseOver == null) {
+        return(
+          <div className={"navButton" + selectedState}>
+            <h1>{this.props.arrow}</h1>
+          </div>
+        );
+      } else {
+        return(
+          <div onMouseOver={this.props.mouseOver} onClick={() => this.props.actionFunc()} className={"navButton" + selectedState}>
+            <h1>{this.props.arrow}</h1>
+          </div>
+        );
+      }
+
+
+      
     }
   }
   

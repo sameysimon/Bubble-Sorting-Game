@@ -24,7 +24,15 @@ var bubbleSortCode = `private void bubbleSort(int[] theArray) {
 class App extends InputComponent {
   constructor(props) {
     super(props);
-    this.state = {gameState: "MainMenu", escaping: "", time: 0};
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+      //Mobile Device
+      this.state = {gameState: "Mobile", time: 0};  
+    } else {
+      //Not mobile device.
+      this.state = {gameState: "MainMenu", time: 0};
+    }
+    
+    
     this.goToMainMenu = this.goToMainMenu.bind(this);
     this.enableInput();
   }
@@ -55,7 +63,7 @@ class App extends InputComponent {
             <div onClick={() => {this.startGame()}} className="Option">Play Game</div>
             <div onClick={() => {this.setState({gameState: "Verses"})}} className="Option">Player vs Computer</div>
             <div onClick={() => {this.setState({gameState: "HowToPlay"})}} className="Option">How To Play</div>
-            <div className="Option">Quit</div>
+            <a href="https://github.com/sameysimon/Bubble-Sorting-Game"><div className="Option">Github Repo</div></a>
           </div>
         </div>
       );
@@ -69,8 +77,41 @@ class App extends InputComponent {
       );
       
     } else if (this.state.gameState == "HowToPlay") {
-      return(
-        <div className="Screen">
+      this.disableInput();
+      return(<HelpScreen quit={this.goToMainMenu} />);
+    } else if (this.state.gameState == "Mobile") {
+      <div className="Screen">
+        <div className="ArticleText">
+          <p>Sorry, this web game is not compatable with mobile devices. Please try it on your laptop/desktops! I hope to add mobile support in the future, but you'll need to hold off for now. Thank you.</p>
+          <p><a href="https://github.com/sameysimon/Bubble-Sorting-Game">Click to checkout the Github Repo!</a></p>
+        </div>
+      </div>
+    }
+  }
+}
+
+class HelpScreen extends InputComponent {
+  constructor(props) {
+    super(props);
+    this.enableInput();
+    this.state = {smallInterval: 0};
+    
+  }
+  componentWillUnmount() {
+    this.disableInput();
+  }
+  keyboardInput(e) {
+    if (e.key === "Escape") {
+      this.props.quit();
+    }
+  }
+  gamepadInput() {
+    const gamepad = navigator.getGamepads()[0];
+    if (gamepad.buttons[6].touched && gamepad.buttons[7].touched) { this.props.quit(); }
+  }
+  render() {
+    return(
+      <div className="Screen">
           <h1 className="Heading">How To Play</h1>
           <div className="ArticleText">
             <p>Do you think of yourself as smarter than a computer?</p>
@@ -81,11 +122,13 @@ class App extends InputComponent {
             <p>You're done when index 0 holds your smallest value and index 9 holds your largest value.</p>
             <p>From Team Humanity, good luck.</p>
           </div>
-          <div onClick={() => {this.setState({gameState: "MainMenu"})}} className={"EscapeButton"}><p>Escape</p></div>
+          <div onClick={this.props.quit} className={"EscapeButton"}><p>Escape</p></div>
         </div>
-      );
-    }
+    );
   }
+  
 }
+
+
 
 export default App;

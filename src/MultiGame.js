@@ -277,7 +277,7 @@ class ResultsScreen extends InputComponent {
         return(
           <>
             <p>So, the computer won. To be honest I didn't even program for you winning. This text is the same either way. You cannot possibly win. Computers are simply better at this sort of thing.</p>
-            <p>I admit, this is a little unfair: the computer reads the numbers as integers in binary, weheras you need to read them from a screen, through your eyes, across your retina and along your optic nerve -- with additional shape-recognition and image-flipping between.</p>
+            <p>I admit, this is a little unfair: the computer reads the numbers as integers in binary, whereas you need to read them from a screen, through your eyes, across your retina and along your optic nerve -- with additional shape-recognition and image-flipping between.</p>
             <p>I like approximate a computer fetching an int with a human recalling their name.</p>
           </>
         );
@@ -307,7 +307,7 @@ class ResultsScreen extends InputComponent {
           return(
             <>
             <h1>Thank You for Playing!</h1>
-            <p>Hit Escape to return to Main Menu.</p>
+            <p>Hit ESC to return to Main Menu.</p>
             </>
           ); 
     }
